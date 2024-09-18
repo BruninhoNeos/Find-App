@@ -14,7 +14,7 @@ function validarCPF(cpf) {
   let soma = 0;
   let resto;
 
-  // Cálculo do primeiro dígito verificador
+  
   for (let i = 1; i <= 9; i++) {
     soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
   }
@@ -24,7 +24,6 @@ function validarCPF(cpf) {
 
   soma = 0;
 
-  // Cálculo do segundo dígito verificador
   for (let i = 1; i <= 10; i++) {
     soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
   }
