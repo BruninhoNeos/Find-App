@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import styles from './styles';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Text, TextInput, TouchableOpacity,Alert, Image, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Image, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import axios from 'axios'; // Importa o axios para fazer a requisição HTTP
 
 export default function Cadastro2() {
   const navigation = useNavigation();
@@ -11,8 +12,35 @@ export default function Cadastro2() {
   const [bairro, setBairro] = useState('');
   const [cidade, setCidade] = useState('');
 
+  // Função para buscar as informações do CEP
+  const buscaCep = async (cep) => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = response.data;
+
+      if (data.erro) {
+        Alert.alert('Erro', 'CEP não encontrado.');
+        return;
+      }
+      setLogradouro(data.logradouro);
+      setBairro(data.bairro);
+      setCidade(data.localidade);
+
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível buscar o CEP. Verifique a conexão com a internet.');
+    }
+  };
+
+  const handleCepChange = (text) => {
+    const formattedCep = text.replace(/\D/g, '');
+    setCep(formattedCep);
+
+    if (formattedCep.length === 8) {
+      buscaCep(formattedCep);
+    }
+  };
+
   const handleSubmit = () => {
-    // Validação dos campos obrigatórios
     if (!cep.trim()) {
       Alert.alert('Erro', 'Por favor, preencha o campo CEP.');
       return;
@@ -36,9 +64,8 @@ export default function Cadastro2() {
       logradouro,
       bairro,
       cidade
-    })
-
-  }
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -65,7 +92,7 @@ export default function Cadastro2() {
                 autoCapitalize="none"
                 required
                 value={cep}
-                onChangeText={setCep}
+                onChangeText={handleCepChange}
               />
             </View>
 
@@ -108,11 +135,11 @@ export default function Cadastro2() {
             </View>
 
             <TouchableOpacity
-          style={styles.button}
-          onPress={handleSubmit}
-        >
-          <Text style={styles.buttonText}>Próximo</Text>
-        </TouchableOpacity>
+              style={styles.button}
+              onPress={handleSubmit}
+            >
+              <Text style={styles.buttonText}>Próximo</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

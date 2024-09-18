@@ -83,7 +83,7 @@ export default function PerfilCliente() {
   };
 
   const handleConfirm = async () => {
-    const { id, ...data } = formData; // Desestrutura o id do formData
+    
     try {
       await api.put(`/usuarios/${id}`, data);
       Alert.alert('Confirmar', 'As alterações foram salvas.');
@@ -95,13 +95,14 @@ export default function PerfilCliente() {
   };
 
   const handleDeleteAccount = () => {
+    const { id, ...data } = formData;
     Alert.alert(
       "Excluir Conta",
       "Tem certeza de que deseja excluir sua conta?",
       [
         { text: "Cancelar", style: "cancel" },
-        { text: "Excluir", onPress: () => {
-            // Lógica para excluir conta
+        { text: "Excluir", onPress: async () => {
+            await api.delete(`/usuarios/${id}`, data);
             Alert.alert("Conta excluída com sucesso");
             navigation.navigate('Login'); // Redireciona para a tela de login
           }

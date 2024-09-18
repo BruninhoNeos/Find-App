@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import styles from './styles';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
-import api from '../../services/api'
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import api from '../../services/api';
 
 export default function Cadastro3() {
   const navigation = useNavigation();
   const route = useRoute();
   const [email, setEmail] = useState('');
+  const [hidePass, setHidePass] = useState(true);
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
   const handleSubmit = async () => {
+    if (senha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
+    }
+
     const payload = {
       ...route.params,
       email,
@@ -21,6 +28,7 @@ export default function Cadastro3() {
     try {
       const response = await api.post('/usuarios', payload);
       if (response.status === 201) {
+        Alert.alert('Cadastro efetuado com sucesso');
         navigation.navigate('Login');
       } else {
         console.error('Erro ao criar o cadastro.');
@@ -56,16 +64,24 @@ export default function Cadastro3() {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Senha</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            keyboardType="default"
-            autoCapitalize="none"
-            secureTextEntry={true}
-            required
-            value={senha}
-            onChangeText={setSenha}
-          />
+          <View style={styles.inputArea}>
+            <TextInput
+              style={styles.inputSenha}
+              placeholder="Senha"
+              keyboardType="default"
+              autoCapitalize="none"
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry={hidePass}
+            />
+            <TouchableOpacity style={styles.icon} onPress={() => setHidePass(!hidePass)}>
+              {hidePass ? (
+                <Ionicons name="eye" color="#000000" size={25} />
+              ) : (
+                <Ionicons name="eye-off" color="#000000" size={25} />
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.inputContainer}>
@@ -75,7 +91,7 @@ export default function Cadastro3() {
             placeholder="Senha"
             keyboardType="default"
             autoCapitalize="none"
-            secureTextEntry={true}
+            secureTextEntry={hidePass}
             required
             value={confirmarSenha}
             onChangeText={setConfirmarSenha}
@@ -84,8 +100,8 @@ export default function Cadastro3() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={handleSubmit}>
-
+          onPress={handleSubmit}
+        >
           <Text style={styles.buttonText}>Começar</Text>
         </TouchableOpacity>
       </View>

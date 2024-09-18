@@ -33,7 +33,6 @@ export default function Login() {
         }
       }
     } catch (error) {
-      console.error('Erro:', error.response ? error.response.data : error.message);
       Alert.alert('Erro de Login', 'Email ou senha incorretos. Por favor, tente novamente.');
     }
   };
